@@ -1,0 +1,166 @@
+version: 2
+
+models:
+  - name: dim_course_cleansed
+    description: Cleansed Dimension table for courses.
+
+    columns:
+      - name: CourseId
+        description: Unique identifier for the course.
+        tests:
+          - unique
+          - not_null
+          - relationships:
+              to: ref('dim_CourseResource_cleansed')
+              field: CourseId
+
+      - name: CourseName
+        description: Name of the course.
+        tests:
+          - not_null
+          
+      - name: created_at
+        description: Date when the course was created.
+        tests:
+          - not_null
+
+  - name: dim_CourseResource_cleansed
+    description: Cleansed Dimension table for course resources.
+
+    columns:
+      - name: CourseResourceId
+        description: Unique identifier for the course resource.
+        tests:
+          - unique
+          - not_null
+          
+      - name: CourseId
+        description: ID of the course associated with the resource.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_course_cleansed')
+              field: CourseId
+
+      - name: ResourceId
+        description: ID of the resource.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_resource_cleansed')
+              field: ResourceId
+    
+  - name: dim_resource_cleansed
+    description: Cleansed Dimension table for learning resources.
+
+    columns:
+      - name: ResourceId
+        description: Unique identifier for the resource.
+        tests:
+          - unique
+          - not_null
+          - relationships:
+              to: ref('dim_CourseResource_cleansed')
+              field: ResourceId
+
+      - name: ResourceName
+        description: Name of the resource.
+        tests:
+          - not_null
+
+      - name: LearningMinutes
+        description: Number of minutes required to complete the resource.
+        tests:
+          - not_null
+
+  - name: dim_user_cleansed
+    description: Cleansed Dimension table for users.
+
+    columns:
+      - name: UserId
+        description: Unique identifier for the user.
+        tests:
+          - unique
+          - not_null
+          - relationships:
+              to: ref('fct_UserResources_cleansed')
+              field: UserId
+
+      - name: UserName
+        description: User's name.
+        tests:
+          - not_null
+
+      - name: Email
+        description: User's email address.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['@gmail.com', '@yahoo.com', '@hotmail.com']
+
+      - name: createdAt
+        description: Date when the user account was created.
+        tests:
+          - not_null
+
+  - name: fct_UserCourse_cleansed
+    description: Cleansed Fact table for user course enrollments.
+
+    columns:
+      - name: UserCourseId
+        description: Unique identifier for the user course enrollment.
+        tests:
+          - unique
+          - not_null
+
+      - name: UserId
+        description: ID of the user.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('fct_UserResources_cleansed')
+              field: UserId
+
+      - name: CourseId
+        description: ID of the enrolled course.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_course_cleansed')
+              field: CourseId
+
+      - name: EnrollDate
+        description: Date when the user enrolled in the course.
+        tests:
+          - not_null
+
+  - name: fct_UserResources_cleansed
+    description: Cleansed Fact table for user resource completions.
+
+    columns:
+      - name: UserResourceId
+        description: Unique identifier for the user resource completion.
+        tests:
+          - unique
+          - not_null
+
+      - name: UserId
+        description: ID of the user who completed the resource.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_user_cleansed')
+              field: UserId
+
+      - name: ResourceId
+        description: ID of the completed resource.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_resource_cleansed')
+              field: ResourceId
+
+      - name: CompletedDate
+        description: Date when the resource was completed by the user.
+        tests:
+          - not_null

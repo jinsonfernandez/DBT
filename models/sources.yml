@@ -1,0 +1,82 @@
+version: 2
+
+sources:
+  - name: reporting
+    database: fndw
+    schema: reporting
+    tables:
+      - name: users
+        identifier: raw_users
+        columns:
+          - name: UserId
+            tests:
+              - unique
+          - name: UserName
+          - name: Email
+            tests:
+              - dbt_expectations.expect_column_values_to_match_regex:
+                  regex: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+          - name: createdAt
+            tests:
+              - not_null
+
+      - name: resources
+        identifier: raw_resources
+        columns:
+          - name: ResourceId
+            tests:
+              - unique
+          - name: ResourceName
+          - name: LearningMinutes
+
+      - name: courses
+        identifier: raw_Courses
+        columns:
+          - name: CourseId
+            tests:
+              - unique
+          - name: CourseName
+
+      - name: CourseResources
+        identifier: raw_CourseResources
+        columns:
+          - name: CourseResourceId
+            tests:
+              - unique
+          - name: CourseId
+          - name: ResourceId
+
+      - name: UserResources
+        loaded_at_field: raw_UserResources
+        freshness:
+          warn_after: {count: 12, period: hour}
+          error_after: {count: 24, period: hour}
+        identifier: UserResourceId
+        columns:
+          - name: UserResourceId
+            tests:
+              - unique
+          - name: UserId
+          - name: ResourceId
+          - name: CompletedDate
+            tests:
+              - not_null
+
+      - name: UserCourse
+        loaded_at_field: load_date
+        freshness:
+          warn_after: {count: 12, period: hour}
+          error_after: {count: 24, period: hour}
+        identifier: raw_UserCourse
+        columns:
+          - name: UserCourseId
+            tests:
+              - unique
+          - name: UserId
+          - name: CourseId
+          - name: EnrolleDate
+            tests:
+              - not_null
+          - name: load_date
+            tests:
+              - not_null
