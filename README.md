@@ -1,15 +1,33 @@
-Welcome to your new dbt project!
+# End-to-End DBT Project with Snowflake
 
-### Using the starter project
+## Introduction
+This project demonstrates an end-to-end data transformation pipeline using DBT (Data Build Tool) connected with Snowflake. It covers the setup, configuration, and execution of DBT models to transform and load data within Snowflake, showcasing best practices for data modeling and pipeline management.
 
-Try running the following commands:
-- dbt run
-- dbt test
+## Prerequisites
+- Snowflake account with necessary permissions
+- DBT installed on your local machine or development environment
+- Basic knowledge of SQL and data modeling concepts
 
+## Getting Started
 
-### Resources:
-- Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
-- Check out [Discourse](https://discourse.getdbt.com/) for commonly asked questions and answers
-- Join the [chat](https://community.getdbt.com/) on Slack for live discussions and support
-- Find [dbt events](https://events.getdbt.com) near you
-- Check out [the blog](https://blog.getdbt.com/) for the latest news on dbt's development and best practices
+### Setting Up Your Environment
+1. **Install DBT:**
+   Ensure DBT is installed and properly configured on your machine. Refer to the [official DBT installation guide](https://docs.getdbt.com/dbt-cli/installation) for instructions.
+
+2. **Configure DBT Profile:**
+   Set up your `~/.dbt/profiles.yml` to connect to your Snowflake account. Here's an example configuration:
+   ```yaml
+   your_project_name:
+     target: dev
+     outputs:
+       dev:
+         type: snowflake
+         account: your_snowflake_account
+         user: your_username
+         password: your_password
+         role: your_role
+         database: your_database
+         warehouse: your_warehouse
+         schema: your_schema
+         threads: 4
+         client_session_keep_alive: False
